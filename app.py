@@ -3,7 +3,6 @@ import pandas as pd
 import hashlib
 import folium
 from streamlit_folium import st_folium
-from PIL import Image
 import time
 
 def make_hashes(password):
