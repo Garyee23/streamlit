@@ -1,6 +1,0 @@
-streamlit
-pandas
-folium
-hashlib
-streamlit_folium
-time
