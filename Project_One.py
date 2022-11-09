@@ -42,52 +42,64 @@ def increment_counter(increment_value=0):
 def decrement_counter(decrement_value=0):
       st.session_state.count -= decrement_value
 
+stock = df.loc[st.session_state.count] #현재 선택된 주식
 
-menu = st.sidebar.selectbox('MENU', options=['현재가','로그인','회원가입','정보수정'])
+vsper = stock['fltRt'] #전일대비등락률
 
-if menu == '현재가':
-      st.button('다음날짜', on_click=increment_counter,
-                kwargs=dict(increment_value=1))
+high = stock['hipr'] #고가
 
-      st.button('이전날짜', on_click=decrement_counter,
-                kwargs=dict(decrement_value=1))
+low = stock['lopr'] #저가
 
-      st.write('현재 인덱스 = ', st.session_state.count)
-      주식 = df.loc[st.session_state.count]
-      # 주식 = 주식.astype({'fltRt': 'float'})
-      전일대비등락률 = 주식['fltRt']
-      고가 = 주식['hipr']
-      저가 = 주식['lopr']
-      전일대비등락 = 주식['vs']
-      현재가 = 주식['clpr']
-      현재날짜 = 주식['basDt']
-      차트주식 = df.astype({'basDt': 'int'})
-      차트주식 = df.astype({'clpr': 'int'})
-      차트주식['price'] = 차트주식['clpr']
+vsnum = stock['vs']
+
+cur = stock['clpr']
+
+tod = stock['basDt']
+
+chstock = df.astype({'basDt': 'int'})
+chstock = df.astype({'clpr': 'int'})
+chstock['price'] = chstock['clpr']
+
+total = 1000000
+
+plt.rc('font', family='Malgun Gothic') # 차트 글꼴
+
+# menu = st.sidebar.selectbox('MENU', options=['현재가','로그인','회원가입','정보수정'])
+# if menu == '현재가':
+
+st.button('다음날짜', on_click=increment_counter,
+          kwargs=dict(increment_value=1))
+
+st.button('이전날짜', on_click=decrement_counter,
+          kwargs=dict(decrement_value=1))
+
+st.write('현재 인덱스 = ', st.session_state.count)
 
 
 
-      if 전일대비등락률[0] == '.':
-            st.metric(label="현재가", value=현재가 + "원", delta='0'+전일대비등락률 + "%")
-            st.write('전일대비등락률은 :', '0'+전일대비등락률)
-      elif 전일대비등락률[0:2] == '-.':
-            전일대비등락률 = 전일대비등락률.replace('-','')
-            st.metric(label="현재가", value=현재가 + "원", delta='-0' + 전일대비등락률 + "%")
-            st.write('전일대비등락률은 :', '-0' + 전일대비등락률)
-      else:
-            st.metric(label="현재가", value=현재가 + "원", delta=전일대비등락률 + "%")
-            st.write('전일대비등락률은 :', 전일대비등락률)
-      st.write('저가는 :', 저가)
-      st.write('고가는 :', 고가)
-      st.write('전일대비등락은 :', 전일대비등락)
-      st.write('현재날자는 :', 현재날짜)
-      st.write('현재가격은 :', 현재가)
-      plt.rc('font', family='Malgun Gothic')
-      plt.title('삼성전자')
-      plt.plot(차트주식.loc[:st.session_state.count, 'basDt'], 차트주식.loc[:st.session_state.count, 'price'],'.-', color='black',)
-      plt.grid(True, linestyle='--', color='#DDDDDD')
-      plt.set_loglevel('WARNING') # 오류코드 삭제
-      st.pyplot(plt)
+
+if vsper[0] == '.':
+      st.metric(label="현재가", value=cur + "원", delta='0'+vsper + "%")
+      st.write('전일대비등락률은 :', '0'+vsper)
+elif vsper[0:2] == '-.':
+      vsper = vsper.replace('-','')
+      st.metric(label="현재가", value=cur + "원", delta='-0' + vsper + "%")
+      st.write('전일대비등락률은 :', '-0' + vsper)
+else:
+      st.metric(label="현재가", value=cur + "원", delta=vsper + "%")
+      st.write('전일대비등락률은 :', vsper)
+
+st.write('저가는 :', low)
+st.write('고가는 :', high)
+st.write('전일대비등락은 :', vsnum)
+st.write('현재날자는 :', tod)
+st.write('현재가격은 :', cur)
+
+plt.title('삼성전자')
+plt.plot(chstock.loc[:st.session_state.count, 'basDt'], chstock.loc[:st.session_state.count, 'price'],'.-', color='black',)
+plt.grid(True, linestyle='--', color='#DDDDDD')
+plt.set_loglevel('WARNING') # 오류코드 삭제
+st.pyplot(plt)
 
 
 df.to_csv('D:/newworkspace/first/df.csv')
